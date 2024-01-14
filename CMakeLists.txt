@@ -13,6 +13,7 @@ set( GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 
 add_subdirectory( deps/glfw )
 add_subdirectory( deps/glew )
+add_subdirectory( deps/glm )
 
 file(GLOB_RECURSE MY_HEADER_FILES src/*.h)
 file(GLOB_RECURSE MY_SOURCE_FILES src/*.cpp)
@@ -23,4 +24,4 @@ add_custom_target(MY_RESOURCES COMMAND ${CMAKE_COMMAND} -E copy_directory
   ${CMAKE_CURRENT_SOURCE_DIR}/src/res ${CMAKE_CURRENT_BINARY_DIR}/res)
 add_dependencies(learn_glfw MY_RESOURCES)
 
-target_link_libraries( learn_glfw ${OPENGL_LIBRARIES} glfw libglew_static )
+target_link_libraries( learn_glfw ${OPENGL_LIBRARIES} glfw libglew_static glm )

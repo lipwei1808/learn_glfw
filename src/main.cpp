@@ -7,8 +7,10 @@
 #include "VertexArray.h"
 #include "Renderer.h"
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
+#include "Texture.h"
 
 int main(void)
 {
@@ -49,10 +51,10 @@ int main(void)
     {
         // An array of 3 vectors which represents 3 vertices
         static const GLfloat g_vertex_buffer_data[] = {
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.0f, 1.0f,
         };
 
         unsigned int indices[] = {
@@ -60,15 +62,15 @@ int main(void)
             2, 3, 0
         };
 
-        unsigned int vao;
-        GLCall(glGenVertexArrays(1, &vao));
-        GLCall(glBindVertexArray(vao));
+        GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
         VertexArray va;
         VertexBuffer vb(g_vertex_buffer_data, sizeof(g_vertex_buffer_data));
 
         VertexBufferLayout layout;
-        layout.Push<float>(3);
+        layout.Push<float>(2);
+        layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
         IndexBuffer ib(indices, 6);
@@ -78,10 +80,16 @@ int main(void)
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
 
+        Texture texture("res/textures/ChernoLogo2.png");
+        texture.Bind();
+        shader.SetUniform1i("u_Texture", 0);
+
         va.Unbind();
         shader.Unbind();
         vb.Unbind();
         ib.Unbind();
+
+        Renderer renderer;
 
         float r = 0.0f;
         float increment = 0.05f;
@@ -89,14 +97,12 @@ int main(void)
         while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
         {
             /* Render here */
-            glClear(GL_COLOR_BUFFER_BIT);
+            renderer.Clear();
             
             GLCall(shader.Bind());
             GLCall(shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f));
 
-            va.Bind();
-            ib.Bind();
-            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+            renderer.Draw(va, ib, shader);
 
             if (r > 1.0f) {
                 increment = -0.05f;
