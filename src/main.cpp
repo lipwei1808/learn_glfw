@@ -12,6 +12,9 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -51,10 +54,10 @@ int main(void)
     {
         // An array of 3 vectors which represents 3 vertices
         static const GLfloat g_vertex_buffer_data[] = {
-            -0.5f, -0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.0f, 1.0f,
+            000.0f, 300.0f, 0.0f, 0.0f,
+            400.0f, 300.0f, 1.0f, 0.0f,
+            900.0f, 400.0f, 1.0f, 1.0f,
+            100.0f, 400.0f, 0.0f, 1.0f,
         };
 
         unsigned int indices[] = {
@@ -75,10 +78,17 @@ int main(void)
 
         IndexBuffer ib(indices, 6);
 
+        glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(200, 0, 0));
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200, -200, 0));
+
+        glm::mat4 mvp = proj * view * model;
+
         // Use shader
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+        shader.SetUniformMat4f("u_MVP", mvp);
 
         Texture texture("res/textures/ChernoLogo2.png");
         texture.Bind();
