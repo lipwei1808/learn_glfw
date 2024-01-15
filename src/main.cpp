@@ -18,6 +18,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "tests/TestClearColor.h"
+#include "tests/TestTexture2D.h"
 
 int main(void)
 {
@@ -71,6 +72,7 @@ int main(void)
         current = menu;
 
         menu->RegisterTest<test::TestClearColor>("Clear Color");
+        menu->RegisterTest<test::TestTexture2D>("Text Texture 2D");
 
         while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
         {
